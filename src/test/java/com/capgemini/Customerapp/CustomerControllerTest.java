@@ -1,6 +1,7 @@
 package com.capgemini.Customerapp;
 
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -24,6 +25,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.capgemini.Customerapp.controller.CustomerController;
 import com.capgemini.Customerapp.entity.Customer;
 import com.capgemini.Customerapp.service.CustomerService;
+
 
 
 
@@ -93,5 +95,23 @@ public class CustomerControllerTest {
         .andExpect(jsonPath("$.customerId").value(1234))
         .andExpect(jsonPath("$.customerName").value("priya"))
         .andDo(print());		              
+	}
+	
+	@Test
+	public void testDelete() throws Exception {
+		when(customerService.findCustomerById(123)).thenReturn(new Customer(1234,"priya", "123", "gp@gmail", "hyd"));
+		mockMvc.perform(delete("/customers/123").accept(MediaType.APPLICATION_JSON))
+		.andExpect(status().isOk())
+		.andDo(print());
+	}
+	@Test
+	public void testAuthenticateCustomer() throws Exception {
+		Customer customer = new Customer(1234, null, "123", null, null);
+		Customer customer1 = new Customer(1234,"priya", "123", "gp@gmail", "hyd");
+		when(customerService.authenticate(Mockito.isA(Customer.class))).thenReturn(customer1);
+		mockMvc.perform(post("/login").contentType(MediaType.APPLICATION_JSON_UTF8)
+				.content("{\r\n" + "    \"customerId\": 1,\r\n" + "    \"customerPassword\": \"12\"\r\n" + "}")
+				.accept(MediaType.APPLICATION_JSON_UTF8)).andDo(print()).andExpect(status().isOk())
+		.andDo(print());
 	}
 }

@@ -24,6 +24,7 @@ import com.capgemini.Customerapp.service.CustomerService;
 @RestController
 public class CustomerController {
 
+	
 	@Autowired
 	private CustomerService customerService;
 	
